@@ -56,6 +56,9 @@ int main(void)
 	*pGpioaAltFunHighReg &= ~(0xf << 0);
 
 
+	// 3. Configure MCO1 pre-scalar in configuration register (bit 24, 25 and 26) to adjust signal according to hardware capacity of analyzer
+
+
 
 
 
