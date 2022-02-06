@@ -17,40 +17,34 @@
  ******************************************************************************
  */
 
+#include <stdio.h>
 #include <stdint.h>
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+struct DataSet {
+	char data1;
+	int data2;
+	char data3;
+	short data4;
+}__attribute__((packed));
+
+struct DataSet data;
+
 int main(void)
 {
-	uint32_t volatile *pClkCtrlReg = (uint32_t*)0x40023830;
-	uint32_t volatile *pPortAModeReg = (uint32_t*)0x40020000;
-	uint32_t volatile *pPortAOutReg = (uint32_t*)0x40020014;
-	uint32_t volatile *pPortAInReg = (uint32_t*)0x40020010;
+	data.data1 = 0xAA;
+	data.data2 = 0xFFFFEEEE;
+	data.data3 = 0x55;
+	data.data4 = 0xA5A5;
 
-	// Enable the clock
-	*pClkCtrlReg |= (1 << 0);
+	printf("data.data1 : %X\n", data.data1);
+	printf("data.data2 : %X\n", data.data2);
+	printf("data.data3 : %X\n", data.data3);
+	printf("data.data4 : %X\n", data.data4);
 
-	// Configure mode of IO Pin PA5 as output
-	// Clear 10 and 11 bit position
-	// Using 3 as binary value of 3 is 11
-//	*pPortAModeReg &= 0xFFFFF3FF;
-	*pPortAModeReg &= ~(3 << 10);
-	// Set the 10th bit
-	*pPortAModeReg |= (1 << 10);
-
-	// Configure PA0 as input
-	*pPortAModeReg &= ~(3 << 0);
-
-	while (1) {
-		// Read Pin PA0
-		uint8_t pinStatus = (uint8_t)(*pPortAInReg & 0x1); // Zero out all the bits except bit 0
-		if (pinStatus) {
-			*pPortAOutReg |= (1 << 5);
-		} else {
-			*pPortAOutReg &= ~(1 << 5);
-		}
-	}
+    /* Loop forever */
+	for(;;);
 }

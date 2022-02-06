@@ -6,7 +6,7 @@
  ******************************************************************************
  * @attention
  *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+ * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
  * All rights reserved.</center></h2>
  *
  * This software component is licensed by ST under BSD 3-Clause license,
@@ -23,34 +23,21 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+#define ADC_BASE_ADDR		0x40012000UL
+#define ADC_CR1_REG_OFFSET	0x04UL
+#define ADC_CR1_REG_ADDR	(ADC_BASE_ADDR + ADC_CR1_REG_OFFSET)
+
+#define RCC_BASE_ADDR		0x40023800UL
+#define RCC_APB2_ENR_OFFSET	0x44UL
+#define RCC_APB2_ENR_ADDR	(RCC_BASE_ADDR + RCC_APB2_ENR_OFFSET)
+
 int main(void)
 {
-	uint32_t volatile *pClkCtrlReg = (uint32_t*)0x40023830;
-	uint32_t volatile *pPortAModeReg = (uint32_t*)0x40020000;
-	uint32_t volatile *pPortAOutReg = (uint32_t*)0x40020014;
-	uint32_t volatile *pPortAInReg = (uint32_t*)0x40020010;
+	uint32_t volatile *const pAdcCtrlReg = (uint32_t *)ADC_CR1_REG_ADDR;
+	uint32_t volatile *const pRccApb2Enr = (uint32_t *)RCC_APB2_ENR_ADDR;
 
-	// Enable the clock
-	*pClkCtrlReg |= (1 << 0);
-
-	// Configure mode of IO Pin PA5 as output
-	// Clear 10 and 11 bit position
-	// Using 3 as binary value of 3 is 11
-//	*pPortAModeReg &= 0xFFFFF3FF;
-	*pPortAModeReg &= ~(3 << 10);
-	// Set the 10th bit
-	*pPortAModeReg |= (1 << 10);
-
-	// Configure PA0 as input
-	*pPortAModeReg &= ~(3 << 0);
-
-	while (1) {
-		// Read Pin PA0
-		uint8_t pinStatus = (uint8_t)(*pPortAInReg & 0x1); // Zero out all the bits except bit 0
-		if (pinStatus) {
-			*pPortAOutReg |= (1 << 5);
-		} else {
-			*pPortAOutReg &= ~(1 << 5);
-		}
-	}
+	*pRccApb2Enr |= (1 << 8);
+	*pAdcCtrlReg |= (1 << 8);
+    /* Loop forever */
+	for(;;);
 }

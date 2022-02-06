@@ -25,32 +25,12 @@
 
 int main(void)
 {
-	uint32_t volatile *pClkCtrlReg = (uint32_t*)0x40023830;
-	uint32_t volatile *pPortAModeReg = (uint32_t*)0x40020000;
-	uint32_t volatile *pPortAOutReg = (uint32_t*)0x40020014;
-	uint32_t volatile *pPortAInReg = (uint32_t*)0x40020010;
 
-	// Enable the clock
-	*pClkCtrlReg |= (1 << 0);
-
-	// Configure mode of IO Pin PA5 as output
-	// Clear 10 and 11 bit position
-	// Using 3 as binary value of 3 is 11
-//	*pPortAModeReg &= 0xFFFFF3FF;
-	*pPortAModeReg &= ~(3 << 10);
-	// Set the 10th bit
-	*pPortAModeReg |= (1 << 10);
-
-	// Configure PA0 as input
-	*pPortAModeReg &= ~(3 << 0);
-
-	while (1) {
-		// Read Pin PA0
-		uint8_t pinStatus = (uint8_t)(*pPortAInReg & 0x1); // Zero out all the bits except bit 0
-		if (pinStatus) {
-			*pPortAOutReg |= (1 << 5);
-		} else {
-			*pPortAOutReg &= ~(1 << 5);
-		}
-	}
+	uint8_t volatile data1;
+	uint8_t volatile data2;
+	data1 = 50;
+	data2 = data1;
+	data2 = data1;
+    /* Loop forever */
+	for(;;);
 }
